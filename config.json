@@ -1,0 +1,8 @@
+{
+  "teams": {
+    "alpha": { "zombieMeterStart": 90, "zombieMeterDecay": 0.3 },
+    "beta": { "zombieMeterStart": 70, "zombieMeterDecay": 0.3 },
+    "gamma": { "zombieMeterStart": 85, "zombieMeterDecay": 0.3 }
+  }
+}
+

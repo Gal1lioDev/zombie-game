@@ -1,0 +1,254 @@
+:root {
+    --bg: #0b0f0b;
+    --panel: #111612;
+    --accent: #00ff88;
+    --accent-dim: #00c06a;
+    --text: #e7ffe7;
+    --muted: #7aa387;
+    --danger: #ff4d6d;
+}
+
+/* Mobile performance optimizations */
+* {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color: var(--text);
+    background: radial-gradient(1200px 600px at 10% -10%, rgba(0,255,136,0.08), transparent),
+                radial-gradient(1000px 800px at 110% 110%, rgba(0,255,136,0.06), transparent),
+                var(--bg);
+    touch-action: manipulation;
+    -webkit-overflow-scrolling: touch;
+}
+
+#app {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    height: 100vh;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+/* Inventory Sidebar */
+#inventory {
+    background: linear-gradient(180deg, #0f1510 0%, #0b100c 100%);
+    border-right: 1px solid rgba(0,255,136,0.2);
+    padding: 16px 14px;
+    display: flex;
+    flex-direction: column;
+}
+
+#inventory .title {
+    font-family: 'Creepster', cursive;
+    font-size: 28px;
+    color: var(--accent);
+    text-shadow: 0 0 10px rgba(0,255,136,0.6);
+    margin-bottom: 8px;
+}
+
+#inventory .footer {
+    margin-top: auto;
+    color: var(--muted);
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+#inventory-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    overflow-y: auto;
+    padding-right: 6px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+
+.pill {
+    background: linear-gradient(180deg, #172219 0%, #0f1612 100%);
+    border: 1px solid rgba(0,255,136,0.35);
+    border-radius: 12px;
+    padding: 8px 10px;
+    color: var(--text);
+    cursor: grab;
+    user-select: none;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.35), inset 0 0 10px rgba(0,255,136,0.1);
+    transition: transform 0.05s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    will-change: transform;
+}
+
+.pill:active { cursor: grabbing; transform: scale(0.98); }
+
+/* Workspace Area */
+#workspace-area { display: grid; grid-template-rows: 56px auto 1fr; }
+
+.topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px; border-bottom: 1px solid rgba(0,255,136,0.2);
+    background: #0e140f;
+}
+
+.game-title { font-family: 'Creepster', cursive; font-size: 26px; color: var(--accent); }
+
+.actions button {
+    background: transparent; color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 6px 10px; border-radius: 8px; cursor: pointer;
+}
+
+#workspace {
+    position: relative;
+    overflow: hidden;
+    background:
+        linear-gradient(135deg, rgba(0,255,136,0.05) 25%, transparent 25%) -10px 0/20px 20px,
+        linear-gradient(225deg, rgba(0,255,136,0.05) 25%, transparent 25%) -10px 0/20px 20px,
+        linear-gradient(315deg, rgba(0,255,136,0.05) 25%, transparent 25%) 0 0/20px 20px,
+        linear-gradient(45deg, rgba(0,255,136,0.05) 25%, transparent 25%) 0 0/20px 20px,
+        repeating-linear-gradient(0deg, transparent 0 10px, rgba(0,255,136,0.04) 10px 20px);
+    border: 2px dashed rgba(0,255,136,0.45);
+    touch-action: manipulation;
+}
+
+.node {
+    position: absolute;
+    min-width: 110px;
+    max-width: 220px;
+    padding: 8px 10px;
+    background: linear-gradient(180deg, #1b2b1f 0%, #0f1a13 100%);
+    border: 1px solid rgba(0,255,136,0.45);
+    border-radius: 12px;
+    color: var(--text);
+    cursor: grab; user-select: none;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.45), inset 0 0 16px rgba(0,255,136,0.1);
+    transition: box-shadow 0.15s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    will-change: transform;
+    transform: translateZ(0); /* Force hardware acceleration */
+}
+
+.node:active { cursor: grabbing; }
+
+.node .badge { display: inline-block; font-size: 11px; color: var(--muted); margin-left: 6px; }
+
+.hint {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    color: var(--muted); font-size: 14px; text-align: center; pointer-events: none;
+}
+
+.toast {
+    position: fixed; bottom: 14px; right: 14px; background: #0f1512; color: var(--text);
+    border: 1px solid rgba(0,255,136,0.35); border-radius: 10px; padding: 10px 12px;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.4);
+}
+
+/* Infection Meter */
+#infectionBar { padding: 10px 16px; border-bottom: 1px dashed rgba(0,255,136,0.3); background: #0c130e; }
+#infectionBar .label { font-family: 'Creepster', cursive; letter-spacing: 1px; color: var(--accent); margin-bottom: 6px; }
+#infectionBar .bar { width: 100%; height: 12px; border: 1px solid rgba(0,255,136,0.35); border-radius: 8px; background: #0a0f0b; overflow: hidden; }
+#infectionFill { height: 100%; width: 0%; background: linear-gradient(90deg, #00ff88, #ffd166, #ff6b6b); box-shadow: inset 0 0 10px rgba(0,0,0,0.6); transition: width 0.4s ease; }
+
+/* Zombie Overlay */
+#zombieOverlay { position: fixed; inset: 0; background: radial-gradient(800px 400px at 50% 40%, rgba(255,0,0,0.12), transparent), rgba(5,7,6,0.96); display: grid; place-items: center; z-index: 999; }
+#zombieOverlay[hidden] { display: none; }
+#zombieOverlay .overlay-content { text-align: center; color: #e8ffee; text-shadow: 0 0 22px rgba(255,0,0,0.35), 0 0 14px rgba(0,255,136,0.35); animation: flicker 2.4s infinite; }
+#zombieOverlay .overlay-title { font-family: 'Creepster', cursive; font-size: 42px; color: #ff6b6b; margin-bottom: 6px; }
+#zombieOverlay .overlay-sub { font-size: 18px; color: #9ad4a8; }
+
+@keyframes flicker {
+    0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+    20%, 24%, 55% { opacity: 0.7; }
+}
+
+/* Login Modal */
+#loginModal { position: fixed; inset: 0; background: rgba(0,0,0,0.65); display: grid; place-items: center; z-index: 1000; }
+#loginModal[hidden] { display: none; }
+.login-card { width: 360px; background: #0f1512; border: 1px solid rgba(0,255,136,0.35); border-radius: 12px; box-shadow: 0 16px 42px rgba(0,0,0,0.55); }
+.login-header { padding: 16px 16px 8px; border-bottom: 1px dashed rgba(0,255,136,0.25); }
+.login-title { font-family: 'Creepster', cursive; color: var(--accent); font-size: 28px; }
+.login-sub { color: var(--muted); font-size: 13px; margin-top: 4px; }
+.login-body { padding: 14px 16px; display: grid; gap: 8px; }
+.login-label { font-size: 14px; color: var(--text); }
+.login-select { background: #0b100c; color: var(--text); border: 1px solid rgba(0,255,136,0.35); border-radius: 8px; padding: 8px 10px; }
+.login-actions { padding: 12px 16px 16px; display: flex; justify-content: flex-end; gap: 8px; }
+.login-confirm { background: transparent; color: var(--accent); border: 1px solid var(--accent); padding: 8px 12px; border-radius: 8px; cursor: pointer; }
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    #app { 
+        grid-template-columns: 1fr; 
+        grid-template-rows: auto 1fr; 
+        height: 100vh;
+        overflow: hidden;
+    }
+    #inventory { 
+        order: 0; 
+        border-right: none; 
+        border-bottom: 1px solid rgba(0,255,136,0.2);
+        height: 30vh;
+        overflow: hidden;
+    }
+    #inventory-list { 
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); 
+        max-height: calc(30vh - 60px);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    #workspace-area { 
+        order: 1; 
+        grid-template-rows: 50px auto 1fr; 
+        height: 70vh;
+        overflow: hidden;
+    }
+    #workspace { 
+        height: calc(70vh - 100px);
+        overflow: hidden;
+    }
+    .node { 
+        min-width: 80px; 
+        max-width: 160px; 
+        padding: 6px 8px; 
+        font-size: 13px;
+    }
+    .topbar { 
+        position: sticky; 
+        top: 0; 
+        z-index: 10;
+        height: 50px;
+    }
+    #infectionBar { 
+        padding: 8px 12px;
+        height: 40px;
+    }
+    #infectionBar .label { font-size: 12px; }
+    #infectionBar .bar { height: 8px; }
+    .pill { 
+        padding: 6px 8px; 
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 420px) {
+    .login-card { width: calc(100vw - 28px); }
+    .pill { padding: 6px 8px; font-size: 14px; }
+}

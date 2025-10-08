@@ -1,0 +1,66 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Apocalypse Alchemy: Cure Craft</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <script>
+        window.BASE_ELEMENTS = {{ base_elements | tojson }};
+    </script>
+    <script defer src="{{ url_for('static', filename='script.js') }}"></script>
+</head>
+<body style="overflow: hidden; height: 100vh;">
+    <div id="app">
+        <aside id="inventory">
+            <div class="title">Inventory</div>
+            <div id="inventory-list"></div>
+            <div class="footer">Drag to workspace →</div>
+        </aside>
+
+        <main id="workspace-area">
+            <header class="topbar">
+                <div class="game-title">☣ Apocalypse Alchemy</div>
+                <div class="actions">
+                    <button id="resetProgress" title="Reset discovered items">Reset</button>
+                </div>
+            </header>
+            <div id="infectionBar" aria-live="polite">
+                <div class="label">Health: <span id="infectionText">--%</span></div>
+                <div class="bar"><div id="infectionFill"></div></div>
+            </div>
+            <section id="workspace" aria-label="Workspace play area"></section>
+        </main>
+    </div>
+
+    <div id="zombieOverlay" hidden>
+        <div class="overlay-content">
+            <div class="overlay-title">You are completely infected</div>
+            <div class="overlay-sub">and are a zombie now</div>
+        </div>
+    </div>
+
+    <div id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+        <div class="login-card">
+            <div class="login-header">
+                <div id="loginTitle" class="login-title">Choose Your Team</div>
+                <div class="login-sub">Team affects starting infection and decay.</div>
+            </div>
+            <div class="login-body">
+                <label for="teamSelect" class="login-label">Team</label>
+                <select id="teamSelect" class="login-select"></select>
+            </div>
+            <div class="login-actions">
+                <button id="confirmTeam" class="login-confirm">Enter</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+
+
