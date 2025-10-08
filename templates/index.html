@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apocalypse Alchemy: Cure Craft</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,7 +14,7 @@
     </script>
     <script defer src="{{ url_for('static', filename='script.js') }}"></script>
 </head>
-<body style="overflow: hidden; height: 100vh;">
+<body>
     <div id="app">
         <aside id="inventory">
             <div class="title">Inventory</div>
@@ -26,6 +26,7 @@
             <header class="topbar">
                 <div class="game-title">☣ Apocalypse Alchemy</div>
                 <div class="actions">
+                    <button id="eraseWorkspace" title="Clear workspace">Erase</button>
                     <button id="resetProgress" title="Reset discovered items">Reset</button>
                 </div>
             </header>

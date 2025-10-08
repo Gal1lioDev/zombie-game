@@ -2,6 +2,7 @@
     const inventoryList = document.getElementById('inventory-list');
     const workspace = document.getElementById('workspace');
     const resetBtn = document.getElementById('resetProgress');
+    const eraseBtn = document.getElementById('eraseWorkspace');
     const infectionText = document.getElementById('infectionText');
     const infectionFill = document.getElementById('infectionFill');
     const zombieOverlay = document.getElementById('zombieOverlay');
@@ -260,19 +261,6 @@
         persistWorkspace();
     });
     
-    // Add touch support for workspace
-    workspace.addEventListener('touchend', e => {
-        if (craftingLocked) return;
-        const touch = e.changedTouches[0];
-        const rect = workspace.getBoundingClientRect();
-        const x = touch.clientX - rect.left - 55;
-        const y = touch.clientY - rect.top - 18;
-        // Only create if it's a quick tap (not from dragging)
-        if (e.target === workspace || e.target.classList.contains('hint')) {
-            createNode('Random', Math.max(0,x), Math.max(0,y), true);
-            persistWorkspace();
-        }
-    });
 
     // Tap-to-add from inventory for touch with random positioning
     inventoryList.addEventListener('click', e => {
@@ -300,6 +288,13 @@
         renderInventory();
         restoreWorkspace();
         toast('Progress reset.');
+    });
+
+    eraseBtn.addEventListener('click', () => {
+        if (!confirm('Clear workspace? (This will not affect your inventory)')) return;
+        workspace.innerHTML = '';
+        persistWorkspace();
+        toast('Workspace cleared.');
     });
 
     // No change-team flow; login shown on load
