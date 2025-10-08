@@ -8,7 +8,6 @@
 
     const STORAGE_KEY = 'zombie_cure_discovered_v1';
     const STORAGE_WORKSPACE = 'zombie_cure_workspace_v1';
-    const STORAGE_TEAM = 'zombie_cure_team_v1';
 
     let recipes = {};
     let discovered = new Set();
@@ -60,6 +59,16 @@
         return !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom);
     }
 
+    function centersDistance(a, b) {
+        const ax = (a.left + a.right) / 2;
+        const ay = (a.top + a.bottom) / 2;
+        const bx = (b.left + b.right) / 2;
+        const by = (b.top + b.bottom) / 2;
+        const dx = ax - bx;
+        const dy = ay - by;
+        return Math.hypot(dx, dy);
+    }
+
     function createNode(name, x, y) {
         const node = document.createElement('div');
         node.className = 'node';
@@ -70,22 +79,33 @@
         node.draggable = false;
 
         let offsetX = 0, offsetY = 0, dragging = false;
+        let pendingX = x, pendingY = y, rafId = null;
+        function commit() {
+            node.style.transform = `translate3d(${pendingX - x}px, ${pendingY - y}px, 0)`;
+            rafId = null;
+        }
         node.addEventListener('pointerdown', e => {
             if (craftingLocked) return;
             dragging = true;
             node.setPointerCapture(e.pointerId);
             offsetX = e.clientX - node.offsetLeft;
             offsetY = e.clientY - node.offsetTop;
+            document.body.style.touchAction = 'none';
         });
         node.addEventListener('pointermove', e => {
             if (!dragging) return;
-            const newX = e.clientX - offsetX;
-            const newY = e.clientY - offsetY;
-            node.style.left = `${newX}px`;
-            node.style.top = `${newY}px`;
+            pendingX = e.clientX - offsetX;
+            pendingY = e.clientY - offsetY;
+            if (rafId === null) rafId = requestAnimationFrame(commit);
         });
         node.addEventListener('pointerup', () => {
             dragging = false;
+            if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
+            x = pendingX; y = pendingY;
+            node.style.transform = '';
+            node.style.left = `${x}px`;
+            node.style.top = `${y}px`;
+            document.body.style.touchAction = '';
             combineIfOverlap(node);
             removeIfOutside(node);
             persistWorkspace();
@@ -115,7 +135,10 @@
         const nodes = Array.from(workspace.querySelectorAll('.node'));
         for (const other of nodes) {
             if (other === movedNode) continue;
-            if (rectsOverlap(movedNode.getBoundingClientRect(), other.getBoundingClientRect())) {
+            const movedRect = movedNode.getBoundingClientRect();
+            const otherRect = other.getBoundingClientRect();
+            const nearEnough = rectsOverlap(movedRect, otherRect) || centersDistance(movedRect, otherRect) < 150;
+            if (nearEnough) {
                 const a = movedNode.dataset.name;
                 const b = other.dataset.name;
                 const res = recipes[keyFor(a,b)] || recipes[keyFor(b,a)];
@@ -185,6 +208,17 @@
         persistWorkspace();
     });
 
+    // Tap-to-add from inventory for touch
+    inventoryList.addEventListener('click', e => {
+        const target = e.target.closest('.pill');
+        if (!target || craftingLocked) return;
+        const rect = workspace.getBoundingClientRect();
+        const x = Math.max(0, rect.width / 2 - 55);
+        const y = Math.max(0, rect.height / 2 - 18);
+        createNode(target.dataset.name, x, y);
+        persistWorkspace();
+    });
+
     resetBtn.addEventListener('click', () => {
         if (!confirm('Reset discovered items and workspace?')) return;
         localStorage.removeItem(STORAGE_KEY);
@@ -194,6 +228,8 @@
         restoreWorkspace();
         toast('Progress reset.');
     });
+
+    // No change-team flow; login shown on load
 
     function updateInfectionUI() {
         const pct = Math.max(0, Math.min(100, infection));
@@ -249,19 +285,18 @@
         startInfectionTimer();
     }
 
-    function showLoginIfNeeded(cfg) {
-        const savedTeam = localStorage.getItem(STORAGE_TEAM);
-        populateTeams(cfg.teams || {});
-        if (savedTeam && (!cfg.teams || cfg.teams[savedTeam])) {
-            loginModal.hidden = true;
-            applyTeamConfig(cfg, savedTeam);
+    function showLogin(cfg) {
+        const teams = cfg.teams || {};
+        const teamKeys = Object.keys(teams);
+        if (teamKeys.length === 0) {
+            applyTeamConfig(cfg, undefined);
             return;
         }
+        populateTeams(teams);
         loginModal.hidden = false;
         confirmTeamBtn.onclick = () => {
             const team = teamSelect.value;
             if (!team) return;
-            localStorage.setItem(STORAGE_TEAM, team);
             loginModal.hidden = true;
             applyTeamConfig(cfg, team);
         };
@@ -274,7 +309,7 @@
 
     fetch('/recipes').then(r => r.json()).then(data => { recipes = data; });
     fetch('/config').then(r => r.json()).then(cfg => {
-        showLoginIfNeeded(cfg);
+        showLogin(cfg);
     }).catch(() => {
         // Fallback if config fetch fails
         infection = 78; infectionDecay = 2; startInfectionTimer();
